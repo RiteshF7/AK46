@@ -2,12 +2,16 @@ package com.plcoding
 
 import com.google.firebase.cloud.FirestoreClient
 import com.google.firebase.messaging.FirebaseMessaging
+import com.plcoding.data.AndroidConfig
+import com.plcoding.domain.sendtoclient.SendToClientController
+import com.plcoding.domain.sendtoshop.SendToShopController
 import io.ktor.http.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.File
 
 fun Route.sendNotification() {
 
@@ -51,15 +55,49 @@ fun Route.sendNotification() {
         }
     }
 
+    get("/file") {
+        val filePath = "C:\\Users\\rites\\AndroidStudioProjects\\RASC\\app\\release\\file.apk"
+        val file = File(filePath)
+
+        if (file.exists()) {
+            call.respondFile(file)
+        } else {
+            call.respond(HttpStatusCode.NotFound, "File not found")
+        }
+    }
+
+    route("/sendtoclient") {
+        post {
+            SendToClientController(call).control()
+        }
+
+    }
+    route("/sendtoshop") {
+        post {
+            SendToShopController(call).control()
+        }
+
+    }
+
     route("/send") {
         post {
             val body = call.receiveNullable<SendMessageDto>() ?: kotlin.run {
                 call.respond(HttpStatusCode.BadRequest)
                 return@post
             }
-            println("received message body: ${body.action}")
-            //uncomment this to send message
-            FirebaseMessaging.getInstance().send(body.toMessage())
+            val message = body.copy(android = AndroidConfig())
+            println("received message body: $message")
+            message.to?.let { token ->
+                if (token.isNotBlank()) {
+                    val firebaseMessaging = FirebaseMessaging.getInstance()
+                    val messageID = firebaseMessaging.send(message.toMessage())
+
+
+                } else {
+                    println("Token is empty")
+                    call.respond(HttpStatusCode.NoContent)
+                }
+            }
 
             call.respond(HttpStatusCode.OK)
         }

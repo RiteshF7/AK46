@@ -2,6 +2,7 @@ package com.plcoding
 
 import com.google.firebase.messaging.Message
 import com.google.firebase.messaging.Notification
+import com.plcoding.data.AndroidConfig
 
 enum class DeviceActions {
     ACTION_LOCK_DEVICE,
@@ -33,19 +34,13 @@ enum class DeviceActions {
 data class SendMessageDto(
     val to: String?,
     val action: DeviceActions,
+    val android: AndroidConfig = AndroidConfig(),
     val payload: Map<String, String> = emptyMap(),
 )
 
-
 fun SendMessageDto.toMessage(): Message {
     return Message.builder()
-        .setNotification(
-            Notification.builder()
-                .setTitle(action.name)
-                .setBody(action.name)
-                .build()
-        )
-
+        .putData("action", action.name)
         .apply {
             setToken(to)
         }
