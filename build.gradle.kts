@@ -30,7 +30,7 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:$logback_version")
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
-
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-slf4j:1.7.3")
 
     // Firebase Admin SDK
     implementation("com.google.firebase:firebase-admin:9.1.1")

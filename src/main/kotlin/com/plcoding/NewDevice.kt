@@ -17,4 +17,5 @@ data class NewDevice(
     val dueDate: String = "",
     val durationInMonths: String = "",
     val timeStamp: Any = Any(),
+    val unlockCode:String ="-----"
 )

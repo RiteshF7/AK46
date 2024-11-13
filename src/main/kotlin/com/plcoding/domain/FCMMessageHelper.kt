@@ -9,10 +9,10 @@ class FCMMessageHelper {
     //todo fcm sms id
     val smsServerFcmToken = ""
 
-    fun buildMessage(fcmToken: String, type: MessageType, data: String): Message? {
+    fun buildMessage(fcmToken: String, data: String): Message? {
         return Message.builder().putAllData(
             mapOf(
-                "data" to data, "type" to type.toString()
+                "data" to data,
             )
         ).apply {
             setToken(fcmToken)
@@ -22,7 +22,7 @@ class FCMMessageHelper {
 
     fun sendFCMMessage(fcmToken: String, type: MessageType, data: String) {
         val firebaseMessaging = FirebaseMessaging.getInstance()
-        val message = buildMessage(fcmToken, type, data)
+        val message = buildMessage(fcmToken, data)
         firebaseMessaging.send(message)
 
     }
