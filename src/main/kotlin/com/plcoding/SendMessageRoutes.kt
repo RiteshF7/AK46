@@ -3,10 +3,8 @@ package com.plcoding
 import com.google.firebase.cloud.FirestoreClient
 import com.google.firebase.messaging.FirebaseMessaging
 import com.plcoding.data.AndroidConfig
-import com.plcoding.data.UnlockCodeRequest
 import com.plcoding.domain.FCMController
-import com.plcoding.domain.sendtoclient.SendToClientController
-import com.plcoding.domain.sendtoshop.SendToShopController
+import com.trex.rexnetwork.data.UpdateTokenRequest
 import io.ktor.http.*
 import kotlin.random.Random
 import io.ktor.server.request.*
@@ -15,7 +13,6 @@ import io.ktor.server.routing.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.util.*
 
 fun Route.sendNotification() {
 
@@ -25,34 +22,32 @@ fun Route.sendNotification() {
         }
     }
 
-    route("/regdevice") {
+    route("/updateDeviceFcmToken") {
         post {
-            val device = call.receiveNullable<NewDevice>() ?: kotlin.run {
+            val updateTokenRequest = call.receiveNullable<UpdateTokenRequest>() ?: kotlin.run {
                 call.respond(HttpStatusCode.BadRequest)
                 return@post
             }
             val firestore = FirestoreClient.getFirestore()
 
-            println("received message body: ${device.shopId}")
+            println("received message body: ${updateTokenRequest.shopId}")
             try {
                 withContext(Dispatchers.IO) {
-                    val docRef = firestore.document("shops/${device.shopId}/devices/${device.imeiOne}")
+                    val docRef =
+                        firestore.document("shops/${updateTokenRequest.shopId}/devices/${updateTokenRequest.deviceId}")
 
                     // First, check if the document already exists
                     val documentSnapshot = docRef.get().get()
-
-                    if (!documentSnapshot.exists()) {
-                        // Document doesn't exist, create it
-                        docRef.set(device).get()
+                    if (documentSnapshot.exists()) {
+                        docRef.update(mapOf(NewDevice::fcmToken.name to updateTokenRequest.token))
                     } else {
-                        // Optionally handle the case where the document already exists
-                        println("Device with IMEI ${device.imeiOne} already exists.")
+                        call.respond(HttpStatusCode.InternalServerError, "Device doesn't exists!.")
                     }
                 }
 
                 call.respond(HttpStatusCode.OK, "Device saved successfully")
             } catch (e: Exception) {
-                call.respond(HttpStatusCode.InternalServerError, "Error saving device: ${e.message}")
+                call.respond(HttpStatusCode.InternalServerError, "Error saving token: ${e.message}")
             }
 
 
