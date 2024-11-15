@@ -9,6 +9,10 @@ plugins {
     application
 }
 
+kotlin {
+    jvmToolchain(11) // or your preferred JDK version
+}
+
 group = "com.plcoding"
 version = "0.0.1"
 
