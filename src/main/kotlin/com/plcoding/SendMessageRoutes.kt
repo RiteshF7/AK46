@@ -21,7 +21,11 @@ fun Route.sendNotification() {
             call.respondText("Hello World!")
         }
     }
-
+    route("/health") {
+        get {
+            call.respondText("OK", contentType = ContentType.Text.Plain)
+        }
+    }
     route("/updateDeviceFcmToken") {
         post {
             val updateTokenRequest = call.receiveNullable<UpdateTokenRequest>() ?: kotlin.run {

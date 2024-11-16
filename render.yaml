@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: emishieldserver
+    env: docker
+    region: oregon  # or your preferred region
+    plan: free  # or your chosen plan
+    healthCheckPath: /health  # adjust based on your health check endpoint
+    envVars:
+      - key: PORT
+        value: 8080
