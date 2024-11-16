@@ -27,6 +27,14 @@ repositories {
     mavenCentral()
 }
 
+tasks.register<Jar>("buildFatJar") {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    manifest {
+        attributes["Main-Class"] = "io.ktor.server.netty.EngineMain" // Adjust if using a different main class
+    }
+    from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
+    with(tasks.jar.get())
+}
 
 
 dependencies {
