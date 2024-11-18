@@ -27,10 +27,6 @@ class FCMController(
         val firebaseMessaging = FirebaseMessaging.getInstance()
         val actionMessageDTOString = actionMessageDTO.fromDTOToString()
         println(actionMessageDTOString)
-        println()
-        println()
-        println()
-        println(fcmToken+"something token")
         val message = Message.builder().putData(
             "ActionMessageDTO",actionMessageDTOString
         ).apply {

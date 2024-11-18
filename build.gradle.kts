@@ -16,25 +16,10 @@ kotlin {
 group = "com.plcoding"
 version = "0.0.1"
 
-application {
-    mainClass.set("io.ktor.server.netty.EngineMain")
-
-    val isDevelopment: Boolean = project.ext.has("development")
-    applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
-}
-
 repositories {
     mavenCentral()
 }
 
-tasks.register<Jar>("buildFatJar") {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    manifest {
-        attributes["Main-Class"] = "io.ktor.server.netty.EngineMain" // Adjust if using a different main class
-    }
-    from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
-    with(tasks.jar.get())
-}
 
 
 dependencies {
